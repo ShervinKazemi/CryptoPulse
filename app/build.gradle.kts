@@ -70,4 +70,7 @@ dependencies {
     // System Ui Controller =>
     implementation(libs.accompanist.systemuicontroller)
 
+    // lottie Animations for add animations =>
+    implementation(libs.lottie.compose)
+
 }

@@ -73,4 +73,11 @@ dependencies {
     // lottie Animations for add animations =>
     implementation(libs.lottie.compose)
 
+    // flow for state management =>
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactive)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+
 }

@@ -11,19 +11,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.cryptopulse.di.myModules
 import com.example.cryptopulse.ui.theme.CryptoPulseTheme
+import dev.burnoo.cokoin.Koin
+import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CryptoPulseTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            Koin (
+                appDeclaration = {
+                    androidContext(this@MainActivity)
+                    modules(myModules)
+                }
+            ) {
+                CryptoPulseTheme {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Greeting(
+                            name = "Android",
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

@@ -67,4 +67,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+    // System Ui Controller =>
+    implementation(libs.accompanist.systemuicontroller)
+
 }

@@ -63,4 +63,8 @@ dependencies {
     implementation(libs.cokoin.android.viewmodel)
     implementation(libs.cokoin.android.navigation)
 
+    // Retrofit For Connect to Api  =>
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
 }

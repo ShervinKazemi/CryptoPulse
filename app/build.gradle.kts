@@ -83,4 +83,7 @@ dependencies {
     // ViewPager for onboarding Screen =>
     implementation(libs.foundation.pager)
 
+    // Coil For Image Loading => 
+    implementation(libs.coil.compose)
+
 }

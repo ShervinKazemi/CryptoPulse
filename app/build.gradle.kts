@@ -80,4 +80,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
+    // ViewPager for onboarding Screen =>
+    implementation(libs.foundation.pager)
+
 }

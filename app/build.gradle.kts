@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -83,7 +84,7 @@ dependencies {
     // ViewPager for onboarding Screen =>
     implementation(libs.foundation.pager)
 
-    // Coil For Image Loading => 
+    // Coil For Image Loading =>
     implementation(libs.coil.compose)
 
 }

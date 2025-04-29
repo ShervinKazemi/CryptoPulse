@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptopulse.model.data.OnboardingData
 import com.example.cryptopulse.model.repositories.onboarding.OnboardingRepository
+import com.example.cryptopulse.util.coroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ class OnboardingViewModel(private val onboardingRepository: OnboardingRepository
     }
 
     private fun fetchOnboardingData() {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             val data = onboardingRepository.getOnboardingData()
             _onboardingData.value = data
         }

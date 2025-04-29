@@ -1,6 +1,7 @@
 [versions]
 accompanistSystemuicontroller = "0.35.2-beta"
 agp = "8.9.1"
+coilCompose = "2.5.0"
 cokoin = "1.0.0"
 cokoinAndroidViewmodel = "1.0.0"
 cokoinAndroidNavigation = "1.0.0"
@@ -22,6 +23,7 @@ uiTextGoogleFonts = "1.8.0"
 pagerVersion = "1.7.2"
 
 [libraries]
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 foundation-pager = { group = "androidx.compose.foundation", name = "foundation", version.ref = "pagerVersion" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

@@ -1,7 +1,6 @@
 package com.example.cryptopulse.di
 
 import com.example.cryptopulse.model.net.ApiService
-import com.example.cryptopulse.model.net.createApiService
 import com.example.cryptopulse.model.repositories.home.HomeRepository
 import com.example.cryptopulse.model.repositories.home.HomeRepositoryImpl
 import com.example.cryptopulse.model.repositories.onboarding.OnboardingRepository
@@ -13,7 +12,7 @@ import org.koin.dsl.module
 
 val myModules = module {
 
-    single<ApiService> { createApiService() }
+    single<ApiService> { ApiService.create() }
 
     single<OnboardingRepository> { OnboardingRepositoryImpl() }
     single<HomeRepository> { HomeRepositoryImpl(get()) }

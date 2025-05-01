@@ -2,6 +2,7 @@ package com.example.cryptopulse.ui.presentation.home.widget
 
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
+import android.provider.CalendarContract.Colors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -54,6 +55,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cryptopulse.model.data.TrendingData
 import com.example.cryptopulse.ui.theme.onErrorDark
+import com.example.cryptopulse.ui.theme.onErrorLight
 import com.example.cryptopulse.ui.theme.primaryLight
 import com.example.cryptopulse.ui.theme.secondaryContainerDarkMediumContrast
 import com.example.cryptopulse.ui.theme.tertiaryLight
@@ -141,7 +143,8 @@ fun CoinCardContent(data: TrendingData.Coin) {
                     text = percentageData,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = if (data.item.data.priceChangePercentage24h.usd >= 0) Color.White
+                            else onErrorDark
                     )
                 )
 
@@ -167,10 +170,15 @@ fun CoinCardContent(data: TrendingData.Coin) {
         ) {
             Text(
                 text = data.item.name,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White
+                )
             )
             Text(
-                text = priceData
+                text = priceData,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White
+                )
             )
         }
     }

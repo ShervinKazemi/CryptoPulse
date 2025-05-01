@@ -22,9 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.cryptopulse.ui.navigation.MyScreens
 
 @Composable
-fun ErrorScreen() {
+fun ErrorScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +62,7 @@ fun ErrorScreen() {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 TextButton(
-                    onClick = { /* TODO: Retry connection */ },
+                    onClick = { navController.navigate(MyScreens.HomeScreen.route) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)

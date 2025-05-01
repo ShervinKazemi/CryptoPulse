@@ -4,7 +4,6 @@ package com.example.cryptopulse.model.data
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
-import com.google.gson.JsonElement
 
 @Parcelize
 data class TrendingData(
@@ -393,7 +392,7 @@ data class TrendingData(
         @Parcelize
         data class Data(
             @SerializedName("content")
-            val content: String? = null,
+            val content: String,
             @SerializedName("floor_price")
             val floorPrice: String,
             @SerializedName("floor_price_in_usd_24h_percentage_change")

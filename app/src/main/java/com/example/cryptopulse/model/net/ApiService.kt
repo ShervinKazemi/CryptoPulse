@@ -2,6 +2,7 @@ package com.example.cryptopulse.model.net
 
 import com.example.cryptopulse.model.data.TrendingData
 import com.example.cryptopulse.util.Constants
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -11,7 +12,8 @@ interface ApiService {
 
     @Headers(Constants.API_KEY)
     @GET("search/trending")
-    suspend fun getTrendingCoins() :TrendingData
+    suspend fun getTrendingCoins() :Response<TrendingData>
+
 
 }
 

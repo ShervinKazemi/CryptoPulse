@@ -1,6 +1,5 @@
 package com.example.cryptopulse.ui.presentation.home.widget
 
-
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
 import androidx.compose.animation.AnimatedVisibility
@@ -36,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -58,6 +59,13 @@ import com.example.cryptopulse.ui.theme.secondaryContainerDarkMediumContrast
 import com.example.cryptopulse.ui.theme.tertiaryLight
 import kotlinx.coroutines.delay
 import java.util.Locale
+import kotlin.math.abs
+
+private val CARD_SIZE = 150.dp
+private val CARD_CORNER_RADIUS = 20.dp
+private const val ANIMATION_DURATION = 500
+private const val GRID_ALPHA = 0.05f
+private const val GRID_SPACING = 20f
 
 @Composable
 fun TrendingSection(
@@ -65,79 +73,70 @@ fun TrendingSection(
     navController: NavController,
     coins: List<TrendingData.Coin>,
 ) {
+    Column {
+        HeaderSection(title, navController)
 
-    HeaderSection(title , navController)
-
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
-    ) {
-        itemsIndexed(coins) { index, coin ->
-            val delayFactor = 100L * (index + 1)
-            CoinSection(coin ,delayFactor)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            itemsIndexed(coins) { index, coin ->
+                val delayFactor = 100L * (index + 1)
+                CoinCard(coin, delayFactor)
+            }
         }
     }
-
-
-
 }
 
 @Composable
-fun CoinSection(data: TrendingData.Coin, delayFactor: Long) {
+fun CoinCard(data: TrendingData.Coin, delayFactor: Long) {
     var visibility by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(Unit) {
         delay(delayFactor)
         visibility = true
     }
 
     AnimatedVisibility(
         visible = visibility,
-        enter = fadeIn(tween(500)) + expandVertically (
-            expandFrom = Alignment.Top,
-            animationSpec = tween(500)
-        )
+        enter = fadeIn(tween(ANIMATION_DURATION)) +
+                expandVertically(
+                    expandFrom = Alignment.Top,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
     ) {
-
         Card(
             modifier = Modifier
-                .size(150.dp)
-                .shadow(8.dp , RoundedCornerShape(20.dp))
-                .clickable {  },
-            shape = RoundedCornerShape(20.dp),
+                .size(CARD_SIZE)
+                .shadow(8.dp, RoundedCornerShape(CARD_CORNER_RADIUS))
+                .clickable { /* Implement click action */ },
+            shape = RoundedCornerShape(CARD_CORNER_RADIUS),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-
             EnhancedCryptoCardBackground(data)
-
-
-
         }
-
     }
-
-
-
 }
 
 @Composable
 fun CoinCardContent(data: TrendingData.Coin) {
-    val percentageData = percentageFormatter(data.item.data.priceChangePercentage24h.usd)
-    val priceData = priceFormatter(data.item.data.price)
-    val coinName = data.item.name
-
+    val percentageData = remember { percentageFormatter(data.item.data.priceChangePercentage24h.usd) }
+    val priceData = remember { priceFormatter(data.item.data.price) }
+    val isPositiveChange = remember { data.item.data.priceChangePercentage24h.usd >= 0 }
+    val iconVector = if (isPositiveChange) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown
+    val iconTint = if (isPositiveChange) secondaryContainerDarkMediumContrast else onErrorDark
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
-    )
-    {
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = percentageData,
                     style = MaterialTheme.typography.titleSmall.copy(
@@ -147,25 +146,19 @@ fun CoinCardContent(data: TrendingData.Coin) {
                 )
 
                 Icon(
-                    imageVector = if (data.item.data.priceChangePercentage24h.usd >= 0) Icons
-                        .Rounded.KeyboardArrowUp else
-                        Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = if (data.item.data.priceChangePercentage24h.usd >= 0) secondaryContainerDarkMediumContrast else
-                        onErrorDark,
+                    imageVector = iconVector,
+                    contentDescription = if (isPositiveChange) "Price Up" else "Price Down",
+                    tint = iconTint,
                 )
             }
-
-
 
             AsyncImage(
                 modifier = Modifier
                     .size(25.dp)
                     .clip(CircleShape),
                 model = data.item.small,
-                contentDescription = null
+                contentDescription = "${data.item.name} icon"
             )
-
         }
 
         Column(
@@ -173,7 +166,7 @@ fun CoinCardContent(data: TrendingData.Coin) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = coinName,
+                text = data.item.name,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
@@ -181,13 +174,11 @@ fun CoinCardContent(data: TrendingData.Coin) {
             )
         }
     }
-
 }
-
 
 @Composable
 private fun EnhancedCryptoCardBackground(data: TrendingData.Coin) {
-
+    val density = LocalDensity.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         val colors = listOf(
@@ -207,85 +198,69 @@ private fun EnhancedCryptoCardBackground(data: TrendingData.Coin) {
                     )
                 )
         )
-
-        // Animated circles for visual interest
-        val circle1Scale = remember { Animatable(0.5f) }
-        val circle2Scale = remember { Animatable(0.7f) }
-
-        LaunchedEffect(Unit) {
-            circle1Scale.animateTo(
-                targetValue = 0.8f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
-
-            circle2Scale.animateTo(
-                targetValue = 1.1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
-        }
+        val circle1Scale = remember { Animatable(0.7f) }
+        val circle2Scale = remember { Animatable(1f) }
 
         Canvas(modifier = Modifier.fillMaxSize()) {
             // Background decorative circles
             drawCircle(
-                color = Color.White.copy(alpha = 0.05f),
+                color = Color.White.copy(alpha = GRID_ALPHA),
                 radius = size.minDimension * circle1Scale.value,
                 center = Offset(x = 0f, y = size.height)
             )
 
             drawCircle(
-                color = Color.White.copy(alpha = 0.05f),
+                color = Color.White.copy(alpha = GRID_ALPHA),
                 radius = size.minDimension * circle2Scale.value * 0.5f,
                 center = Offset(x = size.width, y = 0f)
             )
 
             // Grid pattern for depth
-            val gridSpacing = 20f
-            val gridAlpha = 0.05f
+            val gridLines = with(density) {
+                (size.width / GRID_SPACING).toInt()
+            }
 
-            for (i in 0..size.width.toInt() step gridSpacing.toInt()) {
+            repeat(gridLines) { i ->
+                val x = i * GRID_SPACING
                 drawLine(
-                    color = Color.White.copy(alpha = gridAlpha),
-                    start = Offset(i.toFloat(), 0f),
-                    end = Offset(i.toFloat(), size.height),
+                    color = Color.White.copy(alpha = GRID_ALPHA),
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
                     strokeWidth = 0.5f
                 )
             }
 
-            for (i in 0..size.height.toInt() step gridSpacing.toInt()) {
+            repeat((size.height / GRID_SPACING).toInt()) { i ->
+                val y = i * GRID_SPACING
                 drawLine(
-                    color = Color.White.copy(alpha = gridAlpha),
-                    start = Offset(0f, i.toFloat()),
-                    end = Offset(size.width, i.toFloat()),
+                    color = Color.White.copy(alpha = GRID_ALPHA),
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
                     strokeWidth = 0.5f
                 )
             }
         }
+
         CoinCardContent(data)
     }
-
-
 }
 
-private fun percentageFormatter(number: Double) :String {
-    val formatPattern = DecimalFormat("0.0")
-    val percentage = formatPattern.format(number)
-    return "$percentage%"
-}
+// Use a singleton for formatters to avoid creating new instances on each recomposition
+private object Formatters {
+    private val percentageFormatter = DecimalFormat("0.0")
 
-private fun priceFormatter(number: Double) :String {
-    val symbol = DecimalFormatSymbols(Locale.UK).apply {
+    private val priceSymbols = DecimalFormatSymbols(Locale.UK).apply {
         groupingSeparator = ','
         decimalSeparator = '.'
     }
-    val pricePattern = DecimalFormat("#,###0.00" , symbol)
-    val result = pricePattern.format(number)
-    return "$$result"
+
+    private val priceFormatter = DecimalFormat("#,###0.00", priceSymbols)
+
+    fun formatPercentage(number: Double): String = "${percentageFormatter.format(number)}%"
+
+    fun formatPrice(number: Double): String = "$${priceFormatter.format(number)}"
 }
 
+private fun percentageFormatter(number: Double): String = Formatters.formatPercentage(number)
 
+private fun priceFormatter(number: Double): String = Formatters.formatPrice(number)

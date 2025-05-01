@@ -34,8 +34,8 @@ fun MarketOverviewSection() {
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
-            text = "Market Overview",
-            style = MaterialTheme.typography.titleMedium,
+            text = "Market Overview 👻",
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )

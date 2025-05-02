@@ -61,7 +61,6 @@ import com.example.cryptopulse.ui.theme.secondaryContainerDarkMediumContrast
 import com.example.cryptopulse.ui.theme.tertiaryLight
 import kotlinx.coroutines.delay
 import java.util.Locale
-import kotlin.math.abs
 
 private val CARD_SIZE = 150.dp
 private val CARD_CORNER_RADIUS = 20.dp
@@ -74,9 +73,13 @@ fun TrendingSection(
     title: String,
     navController: NavController,
     coins: List<TrendingData.Coin>,
+    modifier: Modifier = Modifier
 ) {
-    Column {
-        HeaderSection(title, navController)
+    Column(
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        HeaderSection(title, navController , modifier.padding(horizontal = 16.dp))
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),

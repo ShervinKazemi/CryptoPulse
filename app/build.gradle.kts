@@ -87,6 +87,9 @@ dependencies {
     // Coil For Image Loading =>
     implementation(libs.coil.compose)
 
+    // SplashScreen =>
+    implementation(libs.androidx.core.splashscreen)
+
     // okHttp client =>
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cryptopulse.model.data.CoinsData
 import com.example.cryptopulse.model.data.TrendingData
+import com.example.cryptopulse.ui.navigation.MyScreens
 import com.example.cryptopulse.ui.presentation.home.widget.CoinCard
 import com.example.cryptopulse.ui.presentation.home.widget.ErrorScreen
 import com.example.cryptopulse.ui.presentation.home.widget.HeaderSection
@@ -35,38 +36,37 @@ fun HomeScreen(
     val trendingData by viewModel.trendingData.collectAsState()
     val coinsData by viewModel.coinsData.collectAsState()
 
-    when (val trendingState = trendingData) {
-        is UiState.Loading -> LoadingScreen()
-        is UiState.Success -> {
-            val coinsDataState = coinsData as? UiState.Success
-            if (coinsDataState != null) {
-                val trendingCoins = remember(trendingState.data) {
-                    trendingState.data.coins.take(10)
-                }
-                Scaffold(
-                    topBar = { HomeAppBar() },
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { innerPadding ->
-                    MainContent(
-                        innerPadding,
-                        trendingCoins,
-                        coinsDataState.data,
-                        navController
-                    )
-                }
-            } else {
-                ErrorScreen(navController)
+    when {
+        trendingData is UiState.Loading -> {
+            LoadingScreen()
+        }
+        trendingData is UiState.Success && coinsData is UiState.Success -> {
+            val trendingCoins = (trendingData as UiState.Success<TrendingData>).data.coins.take(10)
+            val coins = (coinsData as UiState.Success<CoinsData>).data
+
+            Scaffold(
+                topBar = { HomeAppBar() },
+                containerColor = MaterialTheme.colorScheme.background
+            ) { innerPadding ->
+                HomeContent(
+                    paddingValues = innerPadding,
+                    trendingCoins = trendingCoins,
+                    coins = coins,
+                    navController = navController
+                )
             }
         }
-        is UiState.Error -> ErrorScreen(navController)
+        else -> {
+            ErrorScreen(navController)
+        }
     }
 }
 
 @Composable
-private fun MainContent(
+private fun HomeContent(
     paddingValues: PaddingValues,
-    coins: List<TrendingData.Coin>,
-    data: CoinsData,
+    trendingCoins: List<TrendingData.Coin>,
+    coins: CoinsData,
     navController: NavController,
 ) {
     LazyColumn(
@@ -76,17 +76,19 @@ private fun MainContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
+
         item(key = "market_overview") {
             MarketOverviewSection()
         }
+
         item(key = "trending_section") {
             TrendingSection(
                 title = "Trending 🔥",
-                coins = coins,
+                coins = trendingCoins,
                 navController = navController
             )
         }
-        // Moved TopCoins content into MainContent
+
         item(key = "top_coins_header") {
             HeaderSection(
                 title = "Top Coins 🚀",
@@ -94,10 +96,16 @@ private fun MainContent(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
-        items(data, key = { it.id }) { coin ->
+
+        items(
+            items = coins,
+            key = { it.id }
+        ) { coin ->
             CoinCard(
                 coin = coin,
-                onClick = { /* Navigate to coin details */ },
+                onClick = {
+//                    navController.navigate(MyScreens.DetailScreen.route +"/${coin.id}")
+                },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }

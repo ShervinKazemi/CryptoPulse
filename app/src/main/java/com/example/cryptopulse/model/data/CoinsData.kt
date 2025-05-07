@@ -1,11 +1,11 @@
 package com.example.cryptopulse.model.data
 
-
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 
-class CoinsData : ArrayList<CoinsData.CoinsDataItem>(){
+@Parcelize
+class CoinsData : ArrayList<CoinsData.CoinsDataItem>(), Parcelable {
     @Parcelize
     data class CoinsDataItem(
         @SerializedName("ath")
@@ -53,7 +53,7 @@ class CoinsData : ArrayList<CoinsData.CoinsDataItem>(){
         @SerializedName("price_change_percentage_24h")
         val priceChangePercentage24h: Double,
         @SerializedName("roi")
-        val roi: Roi,
+        val roi: Roi? = null, // Made nullable
         @SerializedName("symbol")
         val symbol: String,
         @SerializedName("total_supply")
@@ -61,6 +61,30 @@ class CoinsData : ArrayList<CoinsData.CoinsDataItem>(){
         @SerializedName("total_volume")
         val totalVolume: Double
     ) : Parcelable {
+        override fun hashCode(): Int {
+            var result = id.hashCode()
+            result = 31 * result + name.hashCode()
+            result = 31 * result + symbol.hashCode()
+            result = 31 * result + currentPrice.hashCode()
+            result = 31 * result + (roi?.hashCode() ?: 0) // Safe null handling
+            return result
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as CoinsDataItem
+
+            if (id != other.id) return false
+            if (name != other.name) return false
+            if (symbol != other.symbol) return false
+            if (currentPrice != other.currentPrice) return false
+            if (roi != other.roi) return false
+
+            return true
+        }
+
         @Parcelize
         data class Roi(
             @SerializedName("currency")

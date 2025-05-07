@@ -1,12 +1,7 @@
 package com.example.cryptopulse.ui.presentation.home.widget
 
-import android.icu.text.DecimalFormat
-import android.icu.text.DecimalFormatSymbols
-import android.provider.CalendarContract.Colors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -36,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,13 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cryptopulse.model.data.TrendingData
-import com.example.cryptopulse.ui.theme.onErrorDark
-import com.example.cryptopulse.ui.theme.onErrorLight
 import com.example.cryptopulse.ui.theme.primaryLight
-import com.example.cryptopulse.ui.theme.secondaryContainerDarkMediumContrast
 import com.example.cryptopulse.ui.theme.tertiaryLight
+import com.example.cryptopulse.util.percentageFormatter
+import com.example.cryptopulse.util.priceFormatter
 import kotlinx.coroutines.delay
-import java.util.Locale
 
 private val CARD_SIZE = 150.dp
 private val CARD_CORNER_RADIUS = 20.dp
@@ -114,7 +106,7 @@ fun CoinCard(data: TrendingData.Coin, delayFactor: Long) {
             modifier = Modifier
                 .size(CARD_SIZE)
                 .shadow(8.dp, RoundedCornerShape(CARD_CORNER_RADIUS))
-                .clickable { /* Implement click action */ },
+                .clickable { },
             shape = RoundedCornerShape(CARD_CORNER_RADIUS),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
@@ -129,7 +121,8 @@ fun CoinCardContent(data: TrendingData.Coin) {
     val priceData = remember { priceFormatter(data.item.data.price) }
     val isPositiveChange = remember { data.item.data.priceChangePercentage24h.usd >= 0 }
     val iconVector = if (isPositiveChange) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown
-    val iconTint = if (isPositiveChange) secondaryContainerDarkMediumContrast else onErrorDark
+    val iconTint = if (isPositiveChange) MaterialTheme.colorScheme.primary else MaterialTheme
+        .colorScheme.error
 
     Column(
         modifier = Modifier
@@ -147,7 +140,7 @@ fun CoinCardContent(data: TrendingData.Coin) {
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = if (data.item.data.priceChangePercentage24h.usd >= 0) Color.White
-                            else onErrorDark
+                            else MaterialTheme.colorScheme.error
                     )
                 )
 
@@ -256,22 +249,3 @@ private fun EnhancedCryptoCardBackground(data: TrendingData.Coin) {
     }
 }
 
-// Use a singleton for formatters to avoid creating new instances on each recomposition
-private object Formatters {
-    private val percentageFormatter = DecimalFormat("0.0")
-
-    private val priceSymbols = DecimalFormatSymbols(Locale.UK).apply {
-        groupingSeparator = ','
-        decimalSeparator = '.'
-    }
-
-    private val priceFormatter = DecimalFormat("#,###0.00", priceSymbols)
-
-    fun formatPercentage(number: Double): String = "${percentageFormatter.format(number)}%"
-
-    fun formatPrice(number: Double): String = "$${priceFormatter.format(number)}"
-}
-
-private fun percentageFormatter(number: Double): String = Formatters.formatPercentage(number)
-
-private fun priceFormatter(number: Double): String = Formatters.formatPrice(number)
